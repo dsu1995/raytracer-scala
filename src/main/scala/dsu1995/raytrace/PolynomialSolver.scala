@@ -1,5 +1,7 @@
 package dsu1995.raytrace
 
+import MathUtils.DoubleExponent
+
 object PolynomialSolver {
 
   def quadraticSolver(a: Double, b: Double, c: Double): Seq[Double] = {
@@ -8,7 +10,7 @@ object PolynomialSolver {
       else Seq(-c / b)
     }
     else {
-      val discriminant = b*b - 4*a*c
+      val discriminant = b**2 - 4*a*c
 
       if (discriminant < 0) Nil
       else {

@@ -3,7 +3,7 @@ package dsu1995.raytrace
 case class Intersection(
   point: Vec3,
   normal: Vec3,
-  objectCenter: Vec3,
+  objCenter: Vec3,
   material: Material
 )
 
