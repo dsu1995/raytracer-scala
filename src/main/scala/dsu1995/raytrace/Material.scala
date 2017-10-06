@@ -8,6 +8,4 @@ case class Material(
   reflectivity: Double = 0,
   transparency: Double = 0,
   refractiveIndex: Double = 1
-) {
-
-}
+)

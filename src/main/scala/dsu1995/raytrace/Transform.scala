@@ -37,6 +37,5 @@ case class Transform(mat: Mat4, inv: Mat4) {
 }
 
 object Transform {
-  def apply(mat: Mat4, inv: Mat4): Transform = new Transform(mat, inv)
   def apply(): Transform = new Transform(Mat4(), Mat4())
 }

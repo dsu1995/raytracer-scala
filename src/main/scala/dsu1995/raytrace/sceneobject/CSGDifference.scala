@@ -13,6 +13,7 @@ case class CSGDifference(
     val leftSegments = left.getCSGSegments(ray).toList
     val rightSegments = right.getCSGSegments(ray).toList
 
+    // TODO should probably make tail recursive
     def merge(left: List[LineSegment], right: List[LineSegment]): List[LineSegment] = {
       (left, right) match {
         case (Nil, _) => Nil

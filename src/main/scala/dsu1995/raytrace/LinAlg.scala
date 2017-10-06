@@ -3,7 +3,7 @@ package dsu1995.raytrace
 
 
 case class Vec2(x: Double, y: Double) {
-  def unary_- : Vec2 = Vec2(-x, -y)
+  def unary_- : Vec2 = this * (-1)
 
   def +(that: Vec2): Vec2 = {
     Vec2(this.x + that.x, this.y + that.y)
@@ -22,7 +22,7 @@ case class Vec2(x: Double, y: Double) {
     this.x * that.x + this.y * that.y
   }
 
-  def normalize: Vec2 = Vec2(x / length, y / length)
+  def normalize: Vec2 = this / length
 
   lazy val length2: Double = this dot this
   lazy val length: Double = math.sqrt(length2)
@@ -31,15 +31,14 @@ case class Vec2(x: Double, y: Double) {
 }
 
 object Vec2 {
-  def apply(): Vec2 = new Vec2(0, 0)
-  def apply(x: Double) = new Vec2(x, x)
-  def apply(x: Double, y: Double): Vec2 = new Vec2(x, y)
+  def apply(): Vec2 = Vec2(0)
+  def apply(x: Double) = Vec2(x, x)
 }
 
 
 
 case class Vec3(x: Double, y: Double, z: Double) {
-  def unary_- : Vec3 = Vec3(-x, -y, -z)
+  def unary_- : Vec3 = this * (-1)
 
   def +(that: Vec3): Vec3 = {
     Vec3(this.x + that.x, this.y + that.y, this.z + that.z)
@@ -64,7 +63,7 @@ case class Vec3(x: Double, y: Double, z: Double) {
     this.x * that.y - this.y * that.x
   )
 
-  def normalize: Vec3 = Vec3(x / length, y / length, z / length)
+  def normalize: Vec3 = this / length
 
   lazy val length2: Double = this dot this
   lazy val length: Double = math.sqrt(length2)
@@ -75,10 +74,9 @@ case class Vec3(x: Double, y: Double, z: Double) {
 }
 
 object Vec3 {
-  def apply(): Vec3 = new Vec3(0, 0, 0)
-  def apply(x: Double) = new Vec3(x, x, x)
-  def apply(x: Double, y: Double, z: Double): Vec3 = new Vec3(x, y, z)
-  def apply(v: Vec2, z: Double): Vec3 = new Vec3(v.x, v.y, z)
+  def apply(): Vec3 = Vec3(0)
+  def apply(x: Double) = Vec3(x, x, x)
+  def apply(v: Vec2, z: Double): Vec3 = Vec3(v.x, v.y, z)
 }
 
 
@@ -86,16 +84,13 @@ object Vec3 {
 
 
 case class Vec4(x: Double, y: Double, z: Double, w: Double) {
-  def unary_- : Vec4 = Vec4(-x, -y ,-z, -w)
-
-  def toVec3: Vec3 = Vec3(x / w, y / w, z / w)
+  def toVec3: Vec3 = Vec3(x, y, z) / w
 }
 
 object Vec4 {
-  def apply(): Vec4 = new Vec4(0, 0, 0, 0)
-  def apply(x: Double) = new Vec4(x, x, x, x)
-  def apply(x: Double, y: Double, z: Double, w: Double): Vec4 = new Vec4(x, y, z, w)
-  def apply(vec3: Vec3, w: Double) = new Vec4(vec3.x, vec3.y, vec3.z, w)
+  def apply(): Vec4 = Vec4(0)
+  def apply(x: Double) = Vec4(x, x, x, x)
+  def apply(vec3: Vec3, w: Double) = Vec4(vec3.x, vec3.y, vec3.z, w)
 }
 
 
@@ -109,12 +104,6 @@ case class RowVec3(x: Double, y: Double, z: Double) {
   def transpose: Vec3 = Vec3(x, y, z)
 }
 
-object RowVec3 {
-  def apply(x: Double, y: Double, z: Double): RowVec3 = new RowVec3(x, y, z)
-}
-
-
-
 
 
 case class RowVec4(x: Double, y: Double, z:Double, w: Double) {
@@ -124,11 +113,6 @@ case class RowVec4(x: Double, y: Double, z:Double, w: Double) {
 
   def transpose: Vec4 = Vec4(x, y, z, w)
 }
-
-object RowVec4 {
-  def apply(x: Double, y: Double, z: Double, w: Double): RowVec4 = new RowVec4(x, y, z, w)
-}
-
 
 
 
@@ -157,9 +141,7 @@ object Axis extends Enumeration {
 }
 
 object Mat3 {
-  def apply(col0: Vec3, col1: Vec3, col2: Vec3): Mat3 = new Mat3(col0, col1, col2)
-
-  def apply(): Mat3 = new Mat3(
+  def apply(): Mat3 = Mat3(
     col0 = Vec3(1, 0, 0),
     col1 = Vec3(0, 1, 0),
     col2 = Vec3(0, 0, 1)
@@ -181,6 +163,8 @@ case class Mat4(col0: Vec4, col1: Vec4, col2: Vec4, col3: Vec4) {
 
   def toMat3: Mat3 = Mat3(col0.toVec3, col1.toVec3, col2.toVec3)
 
+  def transpose: Mat4 = Mat4(row0.transpose, row1.transpose, row2.transpose, row3.transpose)
+
   def scale(factor: Vec3): Mat4 = {
     val scaleMatrix = Mat4(
       Vec4(factor.x, 0, 0, 0),
@@ -191,8 +175,6 @@ case class Mat4(col0: Vec4, col1: Vec4, col2: Vec4, col3: Vec4) {
 
     scaleMatrix * this
   }
-
-  def transpose: Mat4 = Mat4(row0.transpose, row1.transpose, row2.transpose, row3.transpose)
 
   def scale(factor: Double): Mat4 = scale(Vec3(factor))
 
@@ -236,9 +218,7 @@ case class Mat4(col0: Vec4, col1: Vec4, col2: Vec4, col3: Vec4) {
 }
 
 object Mat4 {
-  def apply(col0: Vec4, col1: Vec4, col2: Vec4, col3: Vec4): Mat4 = new Mat4(col0, col1, col2, col3)
-
-  def apply(): Mat4 = new Mat4(
+  def apply(): Mat4 = Mat4(
     col0 = Vec4(1, 0, 0, 0),
     col1 = Vec4(0, 1, 0, 0),
     col2 = Vec4(0, 0, 1, 0),

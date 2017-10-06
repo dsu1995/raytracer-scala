@@ -5,6 +5,4 @@ case class NormalMap(
   exaggeration: Double = 1,
   xratio: Double = 1,
   yratio: Double = 1
-) {
-
-}
+)

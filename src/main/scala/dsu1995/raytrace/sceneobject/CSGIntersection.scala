@@ -11,6 +11,8 @@ case class CSGIntersection(
   def getCSGSegmentsTransformed(ray: Ray): Seq[LineSegment] = {
     if (nodes.isEmpty) Nil
     else {
+
+      // TODO should probably make tail recursive
       def merge(left: List[LineSegment], right: List[LineSegment]): List[LineSegment] = {
         (left, right) match {
           case (Nil, Nil) => Nil

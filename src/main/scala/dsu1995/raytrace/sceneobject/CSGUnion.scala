@@ -10,6 +10,7 @@ case class CSGUnion(
   override protected
   def getCSGSegmentsTransformed(ray: Ray): Seq[LineSegment] = {
 
+    // TODO should probably make tail recursive
     def merge(left: List[LineSegment], right: List[LineSegment]): List[LineSegment] = {
       (left, right) match {
         case (Nil, Nil) => Nil
