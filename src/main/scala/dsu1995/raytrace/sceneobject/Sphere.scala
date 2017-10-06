@@ -10,7 +10,7 @@ import MathUtils.DoubleExponent
 case class Sphere(
   transform: Transform,
   material: Material,
-  texture: Option[Texture],
+  texture: Option[TextureMap],
   normalMap: Option[NormalMap]
 ) extends Primitive {
 

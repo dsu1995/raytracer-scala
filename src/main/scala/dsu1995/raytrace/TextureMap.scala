@@ -1,5 +1,9 @@
 package dsu1995.raytrace
 
-class Texture {
+case class TextureMap(
+  fileName: String,
+  xratio: Double = 1,
+  yratio: Double = 1
+) {
 
 }

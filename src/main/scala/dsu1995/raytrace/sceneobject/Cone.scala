@@ -10,7 +10,7 @@ import dsu1995.raytrace._
 case class Cone(
   transform: Transform,
   material: Material,
-  texture: Option[Texture],
+  texture: Option[TextureMap],
   normalMap: Option[NormalMap]
 ) extends Primitive {
 

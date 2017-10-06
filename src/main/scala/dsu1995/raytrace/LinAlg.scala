@@ -58,6 +58,12 @@ case class Vec3(x: Double, y: Double, z: Double) {
     this.x * that.x + this.y * that.y + this.z * that.z
   }
 
+  def cross(that: Vec3): Vec3 = Vec3(
+    this.y * that.z - this.z * that.y,
+    this.z * that.x - this.x * that.z,
+    this.x * that.y - this.y * that.x
+  )
+
   def normalize: Vec3 = Vec3(x / length, y / length, z / length)
 
   lazy val length2: Double = this dot this
@@ -72,6 +78,7 @@ object Vec3 {
   def apply(): Vec3 = new Vec3(0, 0, 0)
   def apply(x: Double) = new Vec3(x, x, x)
   def apply(x: Double, y: Double, z: Double): Vec3 = new Vec3(x, y, z)
+  def apply(v: Vec2, z: Double): Vec3 = new Vec3(v.x, v.y, z)
 }
 
 

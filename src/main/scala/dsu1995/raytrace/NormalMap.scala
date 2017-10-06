@@ -1,5 +1,10 @@
 package dsu1995.raytrace
 
-class NormalMap {
+case class NormalMap(
+  fileName: String,
+  exaggeration: Double = 1,
+  xratio: Double = 1,
+  yratio: Double = 1
+) {
 
 }
