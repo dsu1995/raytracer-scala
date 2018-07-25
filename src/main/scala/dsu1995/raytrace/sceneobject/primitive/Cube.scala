@@ -1,4 +1,4 @@
-package dsu1995.raytrace.sceneobject
+package dsu1995.raytrace.sceneobject.primitive
 
 import dsu1995.raytrace._
 

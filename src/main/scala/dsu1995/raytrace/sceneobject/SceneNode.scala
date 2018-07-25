@@ -1,20 +1,13 @@
 package dsu1995.raytrace.sceneobject
 
-import dsu1995.raytrace.{LineSegment, _}
+import dsu1995.raytrace.{LineSegment, Transform, Intersection, Ray, Vec4}
 
 
 trait SceneNode {
   val transform: Transform
 
-  //  final def getClosestIntersection(ray: Ray): Option[Intersection] = {
-  //    val transformedRay = ???
-  //    getClosestIntersection(transformedRay).map { intersection =>
-  //      val untransformedIntersection = ???
-  //      untransformedIntersection
-  //    }
-  //  }
-  //
-  //  protected def getClosestIntersectionTransformed(transformedRay: Ray): Option[Intersection]
+  final def getClosestIntersection(ray: Ray): Option[Intersection] =
+    getCSGSegments(ray).headOption.map { lineSegment => lineSegment.near }
 
   final def getCSGSegments(ray: Ray): Seq[LineSegment] = {
     val transformedRay = Ray(

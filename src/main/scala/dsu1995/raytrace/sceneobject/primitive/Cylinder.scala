@@ -1,52 +1,51 @@
-package dsu1995.raytrace.sceneobject
+package dsu1995.raytrace.sceneobject.primitive
 
 import dsu1995.raytrace._
 
 
 /**
-  * Models an inverted cone with its tip at (0,0,0),
-  * with base radius = 1, and height 1
+  * Cylinder centered at (0, 0, 0), with radius = 1, height = 2
   */
-case class Cone(
+case class Cylinder(
   transform: Transform,
   material: Material,
   texture: Option[TextureMap],
   normalMap: Option[NormalMap]
 ) extends Primitive {
 
-  import Cone._
+  import Cylinder._
 
   override protected
   def getCSGSegmentsTransformed(ray: Ray): Seq[LineSegment] = {
     val sideIntersections = {
-      val A = (ray.direction * ray.direction * Vec3(1, 1, -1)).toSeq.sum
-      val B = 2 * (ray.direction * ray.origin * Vec3(1, 1, -1)).toSeq.sum
-      val C = (ray.origin * ray.origin * Vec3(1, 1, -1)).toSeq.sum
+      val A = ray.direction.xy.length2
+      val B = 2 * (ray.direction.xy dot ray.origin.xy)
+      val C = ray.origin.xy.length2 - 1
       val roots = PolynomialSolver.quadraticSolver(A, B, C)
 
       roots
         .filter { t => t >= 0 }
         .map { t => ray.origin + ray.direction * t }
-        .filter { point => zmin <= point.z && point.z <= zmax }
+        .filter { point => zmin < point.z && point.z < zmax }
         .map { point =>
           Intersection(
             point = point,
-            normal = point * Vec3(2, 2, -1),
+            normal = point * Vec3(1, 1, 0),
             objCenter = objCenter,
-            material
+            material = material
           )
         }
     }
 
-    val topIntersection = {
-      val t = (zmax - ray.origin.z) / ray.direction.z
+    val topBottomIntersections = Seq(zmin, zmax).flatMap { zval =>
+      val t = (zval - ray.origin.z) / ray.direction.z
       if (t >= 0) {
         val point = ray.origin + ray.direction * t
 
         if (point.xy.length2 <= 1) Some(
           Intersection(
             point = point,
-            normal = up,
+            normal = Vec3(0, 0, 1) * zval,
             objCenter = objCenter,
             material = material
           )
@@ -56,7 +55,7 @@ case class Cone(
       else None
     }
 
-    sideIntersections ++ topIntersection match {
+    sideIntersections ++ topBottomIntersections match {
       case Nil => Nil
       case Seq(intersection) => Seq(LineSegment(intersection, intersection))
       case Seq(near, far) => Seq(LineSegment(near, far))
@@ -65,13 +64,11 @@ case class Cone(
   }
 }
 
-object Cone {
-  val name: String = "Cone"
+object Cylinder {
+  val name: String = "Cylinder"
 
-  val objCenter: Vec3 = Vec3(0, 0, 0.5)
+  val objCenter = Vec3(0, 0, 0)
 
-  val zmin: Int = 0
+  val zmin: Int = -1
   val zmax: Int = 1
-
-  val up: Vec3 = Vec3(0, 0, 1)
 }

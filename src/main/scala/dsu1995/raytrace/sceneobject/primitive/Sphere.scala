@@ -1,8 +1,7 @@
-package dsu1995.raytrace.sceneobject
+package dsu1995.raytrace.sceneobject.primitive
 
+import dsu1995.raytrace.MathUtils.DoubleExponent
 import dsu1995.raytrace._
-
-import MathUtils.DoubleExponent
 
 /**
   * Unit sphere centered at (0, 0, 0)

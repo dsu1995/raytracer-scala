@@ -1,24 +1,26 @@
-package dsu1995.raytrace.sceneobject
+package dsu1995.raytrace.sceneobject.csg
 
+import dsu1995.raytrace.sceneobject.SceneNode
 import dsu1995.raytrace.{LineSegment, Ray, Transform}
 
-case class CSGDifference(
+case class CSGUnion(
   transform: Transform,
-  left: SceneNode,
-  right: SceneNode
+  nodes: SceneNode*
 ) extends CSGOperator {
 
   override protected
   def getCSGSegmentsTransformed(ray: Ray): Seq[LineSegment] = {
-    val leftSegments = left.getCSGSegments(ray).toList
-    val rightSegments = right.getCSGSegments(ray).toList
 
     // TODO should probably make tail recursive
     def merge(left: List[LineSegment], right: List[LineSegment]): List[LineSegment] = {
       (left, right) match {
-        case (Nil, _) => Nil
+        case (Nil, Nil) => Nil
         case (l, Nil) => l
-        case ((lhead @ LineSegment(lnear, lfar)) :: lrest, (rhead @ LineSegment(rnear, rfar)) :: rrest) =>
+        case (Nil, r) => r
+        case (
+          (lhead @ LineSegment(lnear, lfar)) :: lrest,
+          (rhead @ LineSegment(rnear, rfar)) :: rrest
+          ) =>
           val lNearDist = (ray.origin - lnear.point).length2
           val lFarDist = (ray.origin - lfar.point).length2
 
@@ -29,39 +31,34 @@ case class CSGDifference(
            * l      ----
            * r ----
            */
-          if (rFarDist <= lNearDist) merge(left, rrest)
+          if (rFarDist <= lNearDist) rhead :: merge(left, rrest)
           /*
            * l    ----
            * r  ----
            */
-          else if (rNearDist <= lNearDist && lNearDist <= rFarDist && rFarDist <= lFarDist)
-            merge(
-              left = lhead.copy(near = rfar.copy(normal = -rfar.normal)) :: lrest,
-              right = rrest
-            )
+          else if (rNearDist <= lNearDist && lNearDist <= rFarDist && rFarDist <= lFarDist) {
+            merge(LineSegment(rnear, lfar) :: lrest, rrest)
+          }
           /*
            * l    ----
            * r  --------
            */
-          else if (rNearDist <= lNearDist && lFarDist <= rFarDist) merge(lrest, right)
+          else if (rNearDist <= lNearDist && lFarDist <= rFarDist) {
+            merge(lrest, right)
+          }
           /*
            * l    ----
            * r     --
            */
           else if (lNearDist <= rNearDist && rFarDist <= lFarDist) {
-            val segment = lhead.copy(far = rnear.copy(normal = -rnear.normal))
-            segment :: merge(
-              left = lhead.copy(near = rfar.copy(normal = -rfar.normal)) :: lrest,
-              right = rrest
-            )
+            merge(left, rrest)
           }
           /*
            * l    ----
            * r      ----
            */
           else if (lNearDist <= rNearDist && rNearDist <= lFarDist && lFarDist <= rFarDist) {
-            val segment = lhead.copy(far = rnear.copy(normal = -rnear.normal))
-            segment :: merge(lrest, right)
+            merge(lrest, LineSegment(lnear, rfar) :: rrest)
           }
           /*
            * l  ----
@@ -72,6 +69,8 @@ case class CSGDifference(
       }
     }
 
-    merge(leftSegments, rightSegments)
+    nodes
+      .map { node => node.getCSGSegments(ray).toList }
+      .fold(Nil)(merge)
   }
 }

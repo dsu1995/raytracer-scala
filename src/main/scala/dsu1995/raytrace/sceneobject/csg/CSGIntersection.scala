@@ -1,5 +1,6 @@
-package dsu1995.raytrace.sceneobject
+package dsu1995.raytrace.sceneobject.csg
 
+import dsu1995.raytrace.sceneobject.SceneNode
 import dsu1995.raytrace.{LineSegment, Ray, Transform}
 
 case class CSGIntersection(
