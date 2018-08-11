@@ -1,10 +1,12 @@
 package dsu1995.raytrace
 
 import dsu1995.raytrace.sceneobject.SceneNode
+import MathUtils.DoubleExponent
 
-case class Tracer(
+class Tracer(
   root: SceneNode,
-  imageDims: Vec2,
+  imageWidth: Int,
+  imageHeight: Int,
   eye: Vec3,
   view: Vec3,
   up: Vec3,
@@ -20,6 +22,8 @@ case class Tracer(
   val RECURSION_DEPTH: Int = 8
 
   val AIR_INDEX_OF_REFRACTION: Double = 1
+
+  val imageDims = Vec2(imageWidth, imageHeight)
 
   private val MVW: Mat4 = {
     val T1 = Mat4().translate(
@@ -44,7 +48,11 @@ case class Tracer(
 
 
   def render: Seq[Seq[Vec3]] = {
-
+    (0 until imageHeight).map { y =>
+      (0 until imageWidth).map { x =>
+        renderPixel(y, x)
+      }
+    }
   }
 
   private def renderPixel(x: Double, y: Double): Vec3 = {
@@ -56,6 +64,14 @@ case class Tracer(
     )
 
     traceRecursive(ray, RECURSION_DEPTH)
+  }
+
+  private def willTotalInternalReflect(n_i: Double, n_t: Double, rayDirection: Vec3, normal: Vec3): Boolean = {
+    val v = rayDirection.normalize
+    val N = normal.normalize
+    val vDotN = v dot N
+    val underSqrt = 1 - ((n_i / n_t) ** 2) * (1 - vDotN ** 2)
+    underSqrt < 0.0
   }
 
   private def traceRecursive(ray: Ray, recursionDepth: Int): Vec3 = {
@@ -70,7 +86,7 @@ case class Tracer(
   }
 
   private def backgroundColour(ray: Ray): Vec3 = {
-
+    Vec3(0, 0, 0)
   }
 
   private def traceRay(ray: Ray): Option[Intersection] = {
